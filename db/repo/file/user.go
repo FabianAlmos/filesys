@@ -80,5 +80,9 @@ func (ur *UserRepository) GetAll() (*[]model.User, error) {
 }*/
 
 func (ur *UserRepository) Delete(id int32) error {
-	return os.Remove(fmt.Sprintf("data/users/%d", id))
+	err := os.Remove(fmt.Sprintf("data/users/%d.json", id))
+	if err != nil {
+		fmt.Println(err)
+	}
+	return err
 }
