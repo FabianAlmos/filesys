@@ -70,14 +70,36 @@ func (ur *UserRepository) GetAll() (*[]model.User, error) {
 	return &users, err
 }
 
-/*func (ur *UserRepository) Update(user *model.User) (*model.User, error) {
-	u, err := ur.GetByEmail(&user.Email)
-	if err != nil {
-		fmt.Println(err)
+// Update helper functions
+func ternaryStr(old, new string) string {
+	if new == "\n" {
+		return old
 	}
-	u = user
-	return u, err
-}*/
+	return new
+}
+
+func Scan(msg, oldVal string) string {
+	scanner := *bufio.NewScanner(os.Stdin)
+	fmt.Println(msg, "[", oldVal, "]")
+	scanner.Scan()
+	return ternaryStr(oldVal, scanner.Text())
+}
+
+func (ur *UserRepository) Update(user *model.User) (*model.User, error) {
+	fmt.Println("If you don't want to update a filed just press Enter!")
+
+	fname := Scan("Currently updating FirstName::", user.Firstname)
+	lname := Scan("Currently updating LastName::", user.Lastname)
+	password := Scan("Currently updating Password::", user.Password)
+
+	u := model.User{
+		Firstname: fname,
+		Lastname:  lname,
+		Password:  password,
+	}
+
+	return &u, fmt.Errorf("")
+}
 
 func (ur *UserRepository) Delete(id int32) error {
 	err := os.Remove(fmt.Sprintf("data/users/%d.json", id))
