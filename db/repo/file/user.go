@@ -28,9 +28,18 @@ func (ur *UserRepository) Create(user *model.User) (int32, error) {
 	return user.ID, err
 }
 
-/*func (ur *UserRepository) GetByEmail(email *string) (*model.User, error) {
-
-}*/
+func (ur *UserRepository) GetByEmail(email *string) (*model.User, error) {
+	users, err := ur.GetAll()
+	if err != nil {
+		fmt.Println(err)
+	}
+	for _, u := range *users {
+		if u.Email == *email {
+			return &u, err
+		}
+	}
+	return &model.User{}, fmt.Errorf("couldn't find user by email : %s", *email)
+}
 
 func (ur *UserRepository) GetAll() (*[]model.User, error) {
 	users := make([]model.User, 0)
@@ -61,10 +70,15 @@ func (ur *UserRepository) GetAll() (*[]model.User, error) {
 	return &users, err
 }
 
-/*func (ur *UserRepository) Update() (*model.User, error) {
-
-}
-
-func (ur *UserRepository) Delete() error {
-
+/*func (ur *UserRepository) Update(user *model.User) (*model.User, error) {
+	u, err := ur.GetByEmail(&user.Email)
+	if err != nil {
+		fmt.Println(err)
+	}
+	u = user
+	return u, err
 }*/
+
+func (ur *UserRepository) Delete(id int32) error {
+	return os.Remove(fmt.Sprintf("data/users/%d", id))
+}
