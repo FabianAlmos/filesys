@@ -12,7 +12,7 @@ import (
 type UserRepository struct{}
 
 func (ur *UserRepository) Create(user *model.User) (int32, error) {
-	file, err := os.Create(strconv.Itoa(int(user.ID)))
+	file, err := os.Create(fmt.Sprintf("data/users/%s.json", strconv.Itoa(int(user.ID))))
 	if err != nil {
 		fmt.Println(err)
 	}
