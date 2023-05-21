@@ -117,7 +117,7 @@ func (ur *UserRepository) Update(user *model.User) (*model.User, error) {
 	err = writer.Flush()
 
 	if err == nil {
-		fmt.Println(string(bytes))
+		fmt.Printf("Updated user data: %s\n", string(bytes))
 	} else {
 		fmt.Println(err)
 	}
