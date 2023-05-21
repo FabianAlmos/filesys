@@ -8,6 +8,7 @@ import (
 	"io"
 	"os"
 	"strconv"
+	"time"
 )
 
 type UserRepository struct{}
@@ -72,33 +73,56 @@ func (ur *UserRepository) GetAll() (*[]model.User, error) {
 
 // Update helper functions
 func ternaryStr(old, new string) string {
-	if new == "\n" {
+	if new == "\n" || new == "" {
 		return old
 	}
 	return new
 }
 
-func Scan(msg, oldVal string) string {
+func scan(msg, oldVal string) string {
 	scanner := *bufio.NewScanner(os.Stdin)
-	fmt.Println(msg, "[", oldVal, "]")
+	fmt.Printf("%s [ %s ]\n", msg, oldVal)
 	scanner.Scan()
 	return ternaryStr(oldVal, scanner.Text())
 }
 
 func (ur *UserRepository) Update(user *model.User) (*model.User, error) {
-	fmt.Println("If you don't want to update a filed just press Enter!")
+	fmt.Println("If you don't want to update a field just press Enter!")
 
-	fname := Scan("Currently updating FirstName::", user.Firstname)
-	lname := Scan("Currently updating LastName::", user.Lastname)
-	password := Scan("Currently updating Password::", user.Password)
+	fname := scan("Currently updating FirstName:", user.Firstname)
+	lname := scan("Currently updating LastName:", user.Lastname)
+	password := scan("Currently updating Password:", user.Password)
 
 	u := model.User{
+		ID:        user.ID,
 		Firstname: fname,
 		Lastname:  lname,
+		Email:     user.Email,
 		Password:  password,
+		CreatedAt: user.CreatedAt,
+		UpdateAt:  time.Now().Unix(),
 	}
 
-	return &u, fmt.Errorf("")
+	file, err := os.OpenFile(fmt.Sprintf("data/users/%d.json", user.ID), os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer file.Close()
+	writer := bufio.NewWriter(file)
+	bytes, err := json.Marshal(u)
+	if err != nil {
+		fmt.Println(err)
+	}
+	writer.WriteString(string(bytes))
+	err = writer.Flush()
+
+	if err == nil {
+		fmt.Println(string(bytes))
+	} else {
+		fmt.Println(err)
+	}
+
+	return &u, err
 }
 
 func (ur *UserRepository) Delete(id int32) error {
