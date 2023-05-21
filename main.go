@@ -6,7 +6,6 @@ import (
 	file "filesys/db/repo/file"
 	"fmt"
 	"os"
-	"strconv"
 	"time"
 )
 
@@ -59,7 +58,7 @@ func main() {
 	ur := &file.UserRepository{}
 	scanner := customScanner(*bufio.NewScanner(os.Stdin))
 
-	/*fmt.Println("Creating a new user!")
+	fmt.Println("Creating a new user!")
 	createUser(ur)
 	fmt.Println()
 
@@ -74,10 +73,10 @@ func main() {
 
 	fmt.Println("Updating user!")
 	updateUser(ur, scanner.scan("Enter an email address to update a user!"))
-	fmt.Println()*/
+	fmt.Println()
 
 	// Delete cannot be called immediately because the file is still open when delete is called
-	fmt.Println("Deleting a user!")
+	/*fmt.Println("Deleting a user!")
 	id, _ := strconv.Atoi(scanner.scan("Enter an ID to delete a user!"))
-	ur.Delete(int32(id))
+	ur.Delete(int32(id))*/
 }
